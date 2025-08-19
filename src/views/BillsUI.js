@@ -47,6 +47,11 @@ export default ({ data: bills, loading, error }) => {
   } else if (error) {
     return ErrorPage(error)
   }
+
+  // Tri décroissant par date (du plus récent au plus ancien)
+  const sortedBills = bills && bills.length
+    ? [...bills].sort((a, b) => (b.date > a.date ? 1 : b.date < a.date ? -1 : 0))
+    : bills;
   
   return (`
     <div class='layout'>
@@ -69,7 +74,7 @@ export default ({ data: bills, loading, error }) => {
               </tr>
           </thead>
           <tbody data-testid="tbody">
-            ${rows(bills)}
+            ${rows(sortedBills)}
           </tbody>
           </table>
         </div>
