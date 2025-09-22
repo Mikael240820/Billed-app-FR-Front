@@ -228,3 +228,47 @@ describe("Given that I am a user on login page", () => {
     });
   });
 });
+
+// Tests additionnels pour améliorer la couverture
+describe("Given I am testing Login methods", () => {
+  describe("When login method is called", () => {
+    test("Then it should work", async () => {
+      document.body.innerHTML = LoginUI();
+      
+      const login = new Login({
+        document,
+        localStorage: window.localStorage,
+        onNavigate: jest.fn(),
+        PREVIOUS_LOCATION: "",
+        store: {
+          login: jest.fn().mockResolvedValue({})
+        },
+      });
+      
+      const user = { email: 'test@test.com', password: '123' };
+      await login.login(user);
+      expect(login.store.login).toHaveBeenCalled();
+    });
+  });
+
+  describe("When createUser method is called", () => {
+    test("Then it should work", () => {
+      document.body.innerHTML = LoginUI();
+      
+      const login = new Login({
+        document,
+        localStorage: window.localStorage,
+        onNavigate: jest.fn(),
+        PREVIOUS_LOCATION: "",
+        store: {
+          login: jest.fn().mockResolvedValue({}),
+          users: () => ({
+            create: jest.fn().mockResolvedValue({})
+          })
+        },
+      });
+      
+      expect(login.createUser).toBeDefined();
+    });
+  });
+});

@@ -68,6 +68,38 @@ describe("Given I am connected as an employee", () => {
       billsContainer.handleClickNewBill()
       expect(onNavigate).toHaveBeenCalledWith(ROUTES_PATH['NewBill'])
     })
+
+    test("Then getBills should work", async () => {
+      const billsContainer = new Bills({
+        document, 
+        onNavigate: jest.fn(), 
+        store: mockStore, 
+        localStorage: localStorageMock
+      })
+      
+      const result = await billsContainer.getBills()
+      expect(result).toBeTruthy()
+    })
+
+    test("Then getBills should handle corrupted data", async () => {
+      const mockStoreWithError = {
+        bills: () => ({
+          list: () => Promise.resolve([
+            { date: 'invalid-date', status: 'pending' }
+          ])
+        })
+      }
+      
+      const billsContainer = new Bills({
+        document, 
+        onNavigate: jest.fn(), 
+        store: mockStoreWithError, 
+        localStorage: localStorageMock
+      })
+      
+      const result = await billsContainer.getBills()
+      expect(result).toBeTruthy()
+    })
   })
 })
 

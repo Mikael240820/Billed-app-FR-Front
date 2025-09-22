@@ -39,6 +39,50 @@ describe("Given I am connected as an employee", () => {
       
       expect(newBill).toBeTruthy()
     })
+
+    test("Then handleChangeFile should reject invalid file extensions", () => {
+      localStorage.setItem("user", JSON.stringify({ email: usersTest[0] }))
+      const html = NewBillUI()
+      document.body.innerHTML = html
+      const newBill = new NewBill({
+        document, 
+        onNavigate: jest.fn(), 
+        store: mockStore, 
+        localStorage: window.localStorage
+      })
+      
+      window.alert = jest.fn()
+      const file = new File(['test'], 'test.pdf', { type: 'application/pdf' })
+      const fileInput = screen.getByTestId("file")
+      Object.defineProperty(fileInput, 'files', { value: [file] })
+      const event = { preventDefault: jest.fn(), target: { value: 'test.pdf', files: [file] } }
+      
+      newBill.handleChangeFile(event)
+      expect(window.alert).toHaveBeenCalledWith('Veuillez sélectionner un fichier au format jpg, jpeg ou png.')
+    })
+
+    test("Then handleSubmit should prevent default", () => {
+      localStorage.setItem("user", JSON.stringify({ email: usersTest[0] }))
+      const html = NewBillUI()
+      document.body.innerHTML = html
+      const onNavigate = jest.fn()
+      const newBill = new NewBill({
+        document, 
+        onNavigate, 
+        store: mockStore, 
+        localStorage: window.localStorage
+      })
+      
+      const event = { 
+        preventDefault: jest.fn(),
+        target: {
+          querySelector: jest.fn().mockReturnValue({ value: 'test' })
+        }
+      }
+      newBill.updateBill = jest.fn()
+      newBill.handleSubmit(event)
+      expect(event.preventDefault).toHaveBeenCalled()
+    })
   })
 })
 
